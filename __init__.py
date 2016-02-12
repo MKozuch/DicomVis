@@ -1,0 +1,1 @@
+from DicomVis import DicomVis as DicomVis
