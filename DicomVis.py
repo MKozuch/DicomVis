@@ -2,8 +2,7 @@
 # TODO: ustawiz dobre zakresy na suwakach okienkowania
 # TODO: opakowac w zewnetrzny interfejs
 # TODO: rozkminic metode na kolorowanie przedzialow
-# TODO: flip YZ
-# TODO: dobrze sie bawic
+#  TODO: dobrze sie bawic
 
 __author__ = 'MKozuch'
 
@@ -38,14 +37,12 @@ class DicomVis(VisuAnalysisWidget):
         # define viewers
         [self.viewerXY, self.viewerYZ, self.viewerXZ] = [vtk.vtkResliceImageViewer() for x in range(3)]
 
-        self.viewerXY.SetRenderWindow(self.ui.XYPlaneWidget.GetRenderWindow())
-        # self.ui.XYPlaneWidget.SetRenderWindow(self.viewerXY.GetRenderWindow())
-        # self.ui.XYPlaneWidget.GetRenderWindow().SetupInteractor(self.viewerXY.GetInteractor())
-
-        self.viewerXY.SetupInteractor(self.ui.XYPlaneWidget.GetRenderWindow().GetInteractor())
+        self.viewerXY.SetupInteractor(self.ui.XYPlaneWidget)
         self.viewerYZ.SetupInteractor(self.ui.YZPlaneWidget)
         self.viewerXZ.SetupInteractor(self.ui.XZPlaneWidget)
 
+        #
+        self.viewerXY.SetRenderWindow(self.ui.XYPlaneWidget.GetRenderWindow())
         self.viewerYZ.SetRenderWindow(self.ui.YZPlaneWidget.GetRenderWindow())
         self.viewerXZ.SetRenderWindow(self.ui.XZPlaneWidget.GetRenderWindow())
 
@@ -54,6 +51,9 @@ class DicomVis(VisuAnalysisWidget):
         self.viewerYZ.SetSliceOrientationToYZ()
         self.viewerXZ.SetSliceOrientationToXY()
 
+        # rotate image
+        act = self.viewerYZ.GetImageActor()
+        act.SetOrientation(90, 0, 0)
 
     def updateData(self, studydata):
         self.load_study_from_path(studydata.getPath())
