@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __author__ = 'MKozuch'
 
 from PyQt4 import QtCore, QtGui
