@@ -1,14 +1,18 @@
+#!/usr/bin/env python
+
+__author__ = 'MKozuch'
+
+
 # TODO: podpiac suwaki do callbacka
 # TODO: ustawiz dobre zakresy na suwakach okienkowania
 # TODO: opakowac w zewnetrzny interfejs
 # TODO: rozkminic metode na kolorowanie przedzialow
 #  TODO: dobrze sie bawic
 
-__author__ = 'MKozuch'
-
+import vtk
 from PyQt4 import QtGui, QtCore
 from DicomVis_ui import Ui_Form
-import vtk
+
 
 try:
     from lib import StudyData as StudyData
@@ -35,13 +39,14 @@ class DicomVis(VisuAnalysisWidget):
         self.ui.WindowWidthSlider.setRange(0, 1000)
 
         # define viewers
-        [self.viewerXY, self.viewerYZ, self.viewerXZ] = [vtk.vtkResliceImageViewer() for x in range(3)]
+        [self.viewerXY, self.viewerYZ, self.viewerXZ] = [vtk.vtkImageViewer2() for x in range(3)]
 
+        # attach interactors to viewers
         self.viewerXY.SetupInteractor(self.ui.XYPlaneWidget)
         self.viewerYZ.SetupInteractor(self.ui.YZPlaneWidget)
         self.viewerXZ.SetupInteractor(self.ui.XZPlaneWidget)
 
-        #
+        # set render windows for viewers
         self.viewerXY.SetRenderWindow(self.ui.XYPlaneWidget.GetRenderWindow())
         self.viewerYZ.SetRenderWindow(self.ui.YZPlaneWidget.GetRenderWindow())
         self.viewerXZ.SetRenderWindow(self.ui.XZPlaneWidget.GetRenderWindow())
@@ -54,6 +59,55 @@ class DicomVis(VisuAnalysisWidget):
         # rotate image
         act = self.viewerYZ.GetImageActor()
         act.SetOrientation(90, 0, 0)
+
+        # setup volume rendering
+        self.volRender = vtk.vtkRenderer()
+        self.volRenWin = self.ui.VolumeWidget.GetRenderWindow()
+        self.volRenWin.AddRenderer(self.volRender)
+
+        self.rayCastFunction = vtk.vtkVolumeRayCastCompositeFunction()
+        self.volumeMapper = vtk.vtkVolumeRayCastMapper()
+        self.volumeMapper.SetVolumeRayCastFunction(self.rayCastFunction)
+
+        volumeColor = vtk.vtkColorTransferFunction()
+        volumeColor.AddRGBPoint(0,    0.0, 0.0, 0.0)
+        volumeColor.AddRGBPoint(500,  1.0, 0.5, 0.3)
+        volumeColor.AddRGBPoint(1000, 1.0, 0.5, 0.3)
+        volumeColor.AddRGBPoint(1150, 1.0, 1.0, 0.9)
+        self.volumeColor = volumeColor
+
+        volumeScalarOpacity = vtk.vtkPiecewiseFunction()
+        volumeScalarOpacity.AddPoint(0,    0.00)
+        volumeScalarOpacity.AddPoint(500,  0.15)
+        volumeScalarOpacity.AddPoint(1000, 0.15)
+        volumeScalarOpacity.AddPoint(1150, 0.85)
+        self.volumeScalarOpacity = volumeScalarOpacity
+
+        volumeGradientOpacity = vtk.vtkPiecewiseFunction()
+        volumeGradientOpacity.AddPoint(0,   0.0)
+        volumeGradientOpacity.AddPoint(90,  0.5)
+        volumeGradientOpacity.AddPoint(100, 1.0)
+        self.volumeGradientOpacity = volumeGradientOpacity
+
+        volumeProperty = vtk.vtkVolumeProperty()
+        volumeProperty.SetColor(volumeColor)
+        volumeProperty.SetScalarOpacity(volumeScalarOpacity)
+        volumeProperty.SetGradientOpacity(volumeGradientOpacity)
+        volumeProperty.SetInterpolationTypeToLinear()
+        volumeProperty.ShadeOn()
+        volumeProperty.SetAmbient(0.4)
+        volumeProperty.SetDiffuse(0.6)
+        volumeProperty.SetSpecular(0.2)
+        self.volumeProperty = volumeProperty
+
+        volume = vtk.vtkVolume()
+        volume.SetMapper(self.volumeMapper)
+        volume.SetProperty(self.volumeProperty)
+        self.volume = volume
+
+        self.volRender.AddViewProp(volume)
+
+
 
     def updateData(self, studydata):
         self.load_study_from_path(studydata.getPath())
@@ -105,6 +159,10 @@ class DicomVis(VisuAnalysisWidget):
         # Set range and value for windowing sliders
         self.ui.WindowCenterSlider.setRange(int(self.dataRange[0]), int(self.dataRange[1]))
         self.ui.WindowWidthSlider.setRange(1, int(self.dataRange[1]))
+
+        # set input for volume renderer
+        self.volumeMapper.SetInputConnection(self.reader.GetOutputPort())
+        self.volRenWin.Render()
 
 
     # setup slots for slicing sliders

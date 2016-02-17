@@ -118,7 +118,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="WindowWidthLabel">
        <property name="text">
-        <string>Window width</string>
+        <string>Color window</string>
        </property>
       </widget>
      </item>
@@ -145,7 +145,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="WindowCenterLabel">
        <property name="text">
-        <string>Window center</string>
+        <string>Color level</string>
        </property>
       </widget>
      </item>

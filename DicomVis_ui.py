@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'DicomVis.ui'
 #
-# Created: Mon Jan 25 16:29:32 2016
+# Created: Wed Feb 17 00:11:29 2016
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -124,9 +124,9 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "XY slice", None))
         self.label_3.setText(_translate("Form", "YZ slice", None))
         self.label_2.setText(_translate("Form", "XZ slice", None))
-        self.label_4.setText(_translate("Form", "Volume ", None))
-        self.WindowWidthLabel.setText(_translate("Form", "Window width", None))
+        self.label_4.setText(_translate("Form", "Volume render", None))
+        self.WindowWidthLabel.setText(_translate("Form", "Color window", None))
         self.WindowControlLabel.setText(_translate("Form", "Window control", None))
-        self.WindowCenterLabel.setText(_translate("Form", "Window center", None))
+        self.WindowCenterLabel.setText(_translate("Form", "Color level", None))
 
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
