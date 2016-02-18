@@ -78,15 +78,15 @@ class DicomVis(VisuAnalysisWidget):
 
         volumeScalarOpacity = vtk.vtkPiecewiseFunction()
         volumeScalarOpacity.AddPoint(0,    0.00)
-        volumeScalarOpacity.AddPoint(500,  0.15)
-        volumeScalarOpacity.AddPoint(1000, 0.15)
-        volumeScalarOpacity.AddPoint(1150, 0.85)
+        volumeScalarOpacity.AddPoint(50,  0.15)
+        volumeScalarOpacity.AddPoint(100, 0.15)
+        volumeScalarOpacity.AddPoint(115, 0.85)
         self.volumeScalarOpacity = volumeScalarOpacity
 
         volumeGradientOpacity = vtk.vtkPiecewiseFunction()
         volumeGradientOpacity.AddPoint(0,   0.0)
-        volumeGradientOpacity.AddPoint(90,  0.5)
-        volumeGradientOpacity.AddPoint(100, 1.0)
+        volumeGradientOpacity.AddPoint(100,  0.5)
+        volumeGradientOpacity.AddPoint(500, 1)
         self.volumeGradientOpacity = volumeGradientOpacity
 
         volumeProperty = vtk.vtkVolumeProperty()
@@ -121,11 +121,6 @@ class DicomVis(VisuAnalysisWidget):
 
         self.xyMapper = vtk.vtk
 
-        # # Setup transformation
-        # self.transform.RotateWXYZ(180, 1, 1, 0)
-        # self.transformFilter.SetTransform(self.transform)
-        # self.transformFilter.SetInputConnection(self.reader.GetOutputPort())
-
         # Get data dimensionality
         self.dataExtent = self.reader.GetDataExtent()
         dataDimensionX = self.dataExtent[1]-self.dataExtent[0]
@@ -143,6 +138,7 @@ class DicomVis(VisuAnalysisWidget):
 
         # Get data range
         self.dataRange = self.reader.GetOutput().GetPointData().GetArray("DICOMImage").GetRange()
+        print(self.dataRange)
 
         # Set current slice to the middle one
         for pair in zip([self.viewerXY, self.viewerYZ, self.viewerXZ], [midslice1, midslice2, midslice3]):
@@ -185,14 +181,12 @@ class DicomVis(VisuAnalysisWidget):
         for x in [self.viewerXY, self.viewerXZ, self.viewerYZ]:
             x.SetColorLevel(value)
             x.Render()
-        print(value)
 
     @QtCore.pyqtSlot(int)
     def on_WindowWidthSlider_valueChanged(self, value):
         for x in [self.viewerXY, self.viewerXZ, self.viewerYZ]:
             x.SetColorWindow(value)
             x.Render()
-        print(value)
 
 
 if __name__ == "__main__":

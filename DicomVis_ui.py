@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'DicomVis.ui'
 #
-# Created: Wed Feb 17 00:11:29 2016
+# Created: Thu Feb 18 11:03:07 2016
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -35,7 +35,7 @@ class Ui_Form(object):
         self.gridLayout_2.setHorizontalSpacing(6)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label = QtGui.QLabel(Form)
         self.label.setObjectName(_fromUtf8("label"))
